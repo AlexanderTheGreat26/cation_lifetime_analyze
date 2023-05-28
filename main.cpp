@@ -26,12 +26,13 @@ std::vector<int> uniq_lifes (frames & cation_frames);
 std::vector<std::pair<double, int>>
 life_histogram_creation (std::vector<int> &cation_times, const double & dt, const double & step);
 
-void file_creation (const std::string & file_name, std::vector<std::pair<double, int>> & data);
+template<typename... Tp>
+void file_creation (const std::string & file_name, std::vector<Tp...> & data);
 
 
 int main() {
 
-    auto Zundels_lines = read("CoMs.pos", {"H5O2\t"});
+    auto Zundels_lines = std::move(read("CoMs.pos", {"H5O2\t"}));
     //data_file_creation("Zundels.only", Zundels_lines, step);
 
     auto H3O_lines = read("CoMs.pos", {"H3O\t", "H6O2\t", "H9O4\t"});
@@ -42,9 +43,11 @@ int main() {
     // And the last step - histogram via GNUPlot.
 
     auto uniq_Z = life_histogram_creation(Zundel_times, dt, step);
+    uniq_Z.erase(uniq_Z.end() - 1);
     file_creation("Zundels_uniq", uniq_Z);
 
     auto uniq_H3O = life_histogram_creation(H3O_times, dt, step);
+    uniq_Z.erase(uniq_Z.end() - 1);
     file_creation("H3O_uniq", uniq_H3O);
 
     return 0;
@@ -180,10 +183,31 @@ life_histogram_creation (std::vector<int> &cation_times, const double & dt, cons
 }
 
 
-void file_creation (const std::string & file_name, std::vector<std::pair<double, int>> & data) {
+template <typename T>
+std::string toString (T val) {
+    std::ostringstream oss;
+    oss << val;
+    return oss.str();
+}
+
+
+template<typename T, size_t... Is>
+std::string tuple2string_impl (T const& t, std::index_sequence<Is...>) {
+    return ((toString(std::get<Is>(t)) + '\t') + ...);
+}
+
+template <class Tuple>
+std::string tuple2string (const Tuple& t) {
+    constexpr auto size = std::tuple_size<Tuple>{};
+    return tuple2string_impl(t, std::make_index_sequence<size>{});
+}
+
+
+template<typename... Tp>
+void file_creation (const std::string & file_name, std::vector<Tp...> & data) {
     std::ofstream fout;
     fout.open(file_name, std::ios::trunc);
     for (auto & i : data)
-        fout << i.first << '\t' << i.second << '\n';
+        fout << tuple2string(i) << '\n';
     fout.close();
 }
