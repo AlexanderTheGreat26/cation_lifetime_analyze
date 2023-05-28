@@ -6,10 +6,7 @@
 #include <sstream>
 #include <algorithm>
 #include <utility>
-#include <array>
-#include <memory>
 #include <stdexcept>
-#include <cmath>
 
 
 typedef std::vector<std::string> frame;
@@ -95,8 +92,8 @@ void data_file_creation (const std::string & name, frames & data, const int & st
 
 
 template<typename T>
-T fromString(const std::string& s){
-    std::istringstream iss(s);
+T fromString(const std::string & string){
+    std::istringstream iss(string);
     T res;
     iss >> res;
     return res;
