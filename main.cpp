@@ -94,22 +94,18 @@ void data_file_creation (const std::string & name, frames & data, const int & st
 }
 
 
-bool starts_with (const std::string & word, const std::string & line) {
-    return line.rfind(word, 0) == 0;
-}
-
-
-int cation_ID (const std::string & cation) {
-    int ID;
-    std::istringstream iss(cation);
-    iss >> ID;
-    return ID;
+template<typename T>
+T fromString(const std::string& s){
+    std::istringstream iss(s);
+    T res;
+    iss >> res;
+    return res;
 }
 
 
 bool any_of (std::string & current_cation, frame & cation_frame, int & index) {
     for (int i = 0; i < cation_frame.size(); ++i)
-        if (cation_ID(current_cation) == cation_ID(cation_frame[i])) {
+        if (fromString<int>(current_cation) == fromString<int>(cation_frame[i])) {
             index = i;
             return true;
         }
@@ -141,7 +137,7 @@ int alive_for (std::string & uniq_cation, frames & cation_frames, int & frame_nu
         } else if (i + max_life_step > cation_frames.size()) {
             max_life_step = cation_frames.size() - i;
         } if (i <= current_step + max_life_step &&
-              !is_dead(uniq_cation, i, cation_frames, max_life_step)) { // Insert code here!
+              !is_dead(uniq_cation, i, cation_frames, max_life_step)) {
             continue;
         } else break;
     }
