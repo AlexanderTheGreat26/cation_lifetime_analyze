@@ -40,13 +40,12 @@ int main() {
 
     std::vector<int> Zundel_times = std::move(uniq_lifes(Zundels_lines));
     std::vector<int> H3O_times = std::move(uniq_lifes(H3O_lines));
-    // And the last step - histogram via GNUPlot.
 
-    auto uniq_Z = life_histogram_creation(Zundel_times, dt, step);
+    auto uniq_Z = std::move(life_histogram_creation(Zundel_times, dt, step));
     uniq_Z.erase(uniq_Z.end() - 1);
     file_creation("Zundels_uniq", uniq_Z);
 
-    auto uniq_H3O = life_histogram_creation(H3O_times, dt, step);
+    auto uniq_H3O = std::move(life_histogram_creation(H3O_times, dt, step));
     uniq_Z.erase(uniq_Z.end() - 1);
     file_creation("H3O_uniq", uniq_H3O);
 
